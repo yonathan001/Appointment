@@ -49,3 +49,22 @@ export interface RegisterData {
   password: string;
   role?: 'client' | 'staff' | 'admin';
 }
+
+export interface Notification {
+  id: number;
+  user_id: number;
+  title: string;
+  message: string;
+  type: 'info' | 'success' | 'warning' | 'error';
+  related_to?: 'appointment' | 'service' | 'user' | 'system';
+  related_id?: number;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface NotificationState {
+  notifications: Notification[];
+  unreadCount: number;
+  loading: boolean;
+  error: string | null;
+}

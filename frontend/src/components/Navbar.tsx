@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import NotificationBell from './NotificationBell';
 
 const Navbar: React.FC = () => {
   const { isAuthenticated, user, logout } = useAuth();
@@ -50,16 +51,26 @@ const Navbar: React.FC = () => {
                 )}
                 
                 {user && user.role === 'client' && (
-                  <Link to="/appointments/book" className="hover:bg-blue-700 px-3 py-2 rounded">
+                  <Link to="/appointments/book" className="hover:bg-blue-700 px-3 py-2 rounded text-sm">
                     Book Appointment
                   </Link>
                 )}
                 
-                <div className="px-3 py-2">
-                  <span className="mr-2">Welcome, {user?.username}</span>
-                  <span className="bg-blue-800 px-2 py-1 rounded text-xs">
-                    {user?.role.charAt(0).toUpperCase() + user?.role.slice(1)}
-                  </span>
+                <Link to="/notifications" className="hover:bg-blue-700 px-3 py-2 rounded text-sm">
+                  Notifications
+                </Link>
+                
+                <div className="flex items-center">
+                  <div className="px-3 py-2">
+                    <span className="mr-2">Welcome, {user?.username}</span>
+                    <span className="bg-blue-800 px-2 py-1 rounded text-xs">
+                      {user?.role.charAt(0).toUpperCase() + user?.role.slice(1)}
+                    </span>
+                  </div>
+                  
+                  <div className="px-3 py-2">
+                    <NotificationBell />
+                  </div>
                 </div>
                 
                 <button
@@ -156,11 +167,17 @@ const Navbar: React.FC = () => {
                   </Link>
                 )}
                 
-                <div className="px-3 py-2">
-                  <span className="mr-2">Welcome, {user?.username}</span>
-                  <span className="bg-blue-800 px-2 py-1 rounded text-xs">
-                    {user?.role.charAt(0).toUpperCase() + user?.role.slice(1)}
-                  </span>
+                <div className="flex items-center">
+                  <div className="px-3 py-2">
+                    <span className="mr-2">Welcome, {user?.username}</span>
+                    <span className="bg-blue-800 px-2 py-1 rounded text-xs">
+                      {user?.role.charAt(0).toUpperCase() + user?.role.slice(1)}
+                    </span>
+                  </div>
+                  
+                  <div className="px-3 py-2">
+                    <NotificationBell />
+                  </div>
                 </div>
                 
                 <button

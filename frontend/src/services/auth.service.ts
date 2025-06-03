@@ -1,6 +1,12 @@
 import api from './api';
 import { LoginCredentials, RegisterData, User } from '../types';
 
+// Helper function to get auth header for API requests
+export const getAuthHeader = () => {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 const AuthService = {
   // Login user and get tokens
   login: async (credentials: LoginCredentials) => {

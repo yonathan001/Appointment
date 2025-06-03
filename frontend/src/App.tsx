@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { NotificationProvider } from './contexts/NotificationContext';
 import Navbar from './components/Navbar';
 import PrivateRoute from './components/PrivateRoute';
 
@@ -15,14 +16,16 @@ import RescheduleAppointment from './pages/RescheduleAppointment';
 import Calendar from './pages/Calendar';
 import Services from './pages/Services';
 import Users from './pages/Users';
+import Notifications from './pages/Notifications';
 
 const App: React.FC = () => {
   return (
     <AuthProvider>
-      <Router>
-        <div className="min-h-screen bg-gray-50">
-          <Navbar />
-          <main>
+      <NotificationProvider>
+        <Router>
+          <div className="min-h-screen bg-gray-50">
+            <Navbar />
+            <main>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
@@ -92,12 +95,22 @@ const App: React.FC = () => {
                 } 
               />
               
+              <Route 
+                path="/notifications" 
+                element={
+                  <PrivateRoute>
+                    <Notifications />
+                  </PrivateRoute>
+                } 
+              />
+              
               {/* Catch all - redirect to home */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
         </div>
       </Router>
+      </NotificationProvider>
     </AuthProvider>
   );
 };
