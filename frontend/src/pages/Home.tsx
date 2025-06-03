@@ -1,118 +1,174 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import Button from '../components/Button';
 
 const Home: React.FC = () => {
   const { isAuthenticated, user } = useAuth();
 
   return (
-    <div className="bg-white">
-      <div className="relative isolate px-6 pt-14 lg:px-8">
-        <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-              Appointment Management System
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-600">
-              A simple and efficient way to manage appointments between clients and service providers.
+    <div className="container mx-auto px-4 py-12">
+      {/* Hero Section */}
+      <div className="text-center mb-16">
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+          Appointment Management System
+        </h1>
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+          A comprehensive solution for managing appointments between service providers and clients.
+          Book, track, and manage appointments with ease.
+        </p>
+        
+        {!isAuthenticated ? (
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link to="/login">
+              <Button variant="primary" size="large">
+                Log In
+              </Button>
+            </Link>
+            <Link to="/register">
+              <Button variant="secondary" size="large">
+                Register
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="flex justify-center">
+            <Link to="/dashboard">
+              <Button variant="primary" size="large">
+                Go to Dashboard
+              </Button>
+            </Link>
+          </div>
+        )}
+      </div>
+      
+      {/* Features Section */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">Key Features</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="text-blue-500 mb-4">
+              <svg className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-center mb-2">Easy Booking</h3>
+            <p className="text-gray-600 text-center">
+              Clients can easily browse services and book appointments at their convenience.
             </p>
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-              {isAuthenticated ? (
-                <Link
-                  to="/appointments"
-                  className="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                >
-                  View {user?.role === 'client' ? 'Your' : 'All'} Appointments
-                </Link>
-              ) : (
-                <>
-                  <Link
-                    to="/login"
-                    className="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="text-sm font-semibold leading-6 text-gray-900"
-                  >
-                    Register <span aria-hidden="true">→</span>
-                  </Link>
-                </>
-              )}
+          </div>
+          
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="text-green-500 mb-4">
+              <svg className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-center mb-2">Service Management</h3>
+            <p className="text-gray-600 text-center">
+              Administrators can easily manage services, pricing, and availability.
+            </p>
+          </div>
+          
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="text-purple-500 mb-4">
+              <svg className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-center mb-2">Role-Based Access</h3>
+            <p className="text-gray-600 text-center">
+              Different user roles (Admin, Staff, Client) with appropriate permissions and views.
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      {/* How It Works Section */}
+      <div className="mb-16">
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">How It Works</h2>
+        
+        <div className="max-w-4xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center mb-8">
+            <div className="bg-blue-100 text-blue-500 rounded-full p-4 md:mr-6 mb-4 md:mb-0">
+              <span className="text-2xl font-bold">1</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold mb-2">Create an Account</h3>
+              <p className="text-gray-600">
+                Register as a client to book appointments or as a service provider to offer services.
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex flex-col md:flex-row items-center mb-8">
+            <div className="bg-green-100 text-green-500 rounded-full p-4 md:mr-6 mb-4 md:mb-0">
+              <span className="text-2xl font-bold">2</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold mb-2">Browse Services</h3>
+              <p className="text-gray-600">
+                Explore available services, view details, pricing, and duration.
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex flex-col md:flex-row items-center mb-8">
+            <div className="bg-purple-100 text-purple-500 rounded-full p-4 md:mr-6 mb-4 md:mb-0">
+              <span className="text-2xl font-bold">3</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold mb-2">Book Appointment</h3>
+              <p className="text-gray-600">
+                Select a service, choose a date and time, and confirm your booking.
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex flex-col md:flex-row items-center">
+            <div className="bg-yellow-100 text-yellow-500 rounded-full p-4 md:mr-6 mb-4 md:mb-0">
+              <span className="text-2xl font-bold">4</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold mb-2">Manage Appointments</h3>
+              <p className="text-gray-600">
+                View, reschedule, or cancel your appointments through your dashboard.
+              </p>
             </div>
           </div>
         </div>
       </div>
-
-      <div className="bg-gray-50 py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl lg:text-center">
-            <h2 className="text-base font-semibold leading-7 text-blue-600">Efficient Appointment Management</h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Everything you need to manage appointments
-            </p>
-            <p className="mt-6 text-lg leading-8 text-gray-600">
-              Our system provides a comprehensive solution for managing appointments between clients and service providers.
-            </p>
+      
+      {/* CTA Section */}
+      <div className="bg-blue-50 p-8 rounded-lg text-center">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Ready to Get Started?</h2>
+        <p className="text-gray-600 mb-6">
+          Join our platform today and experience the convenience of our appointment management system.
+        </p>
+        
+        {!isAuthenticated ? (
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link to="/register">
+              <Button variant="primary" size="large">
+                Create an Account
+              </Button>
+            </Link>
+            <Link to="/login">
+              <Button variant="secondary" size="large">
+                Log In
+              </Button>
+            </Link>
           </div>
-          <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
-            <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
-              <div className="relative pl-16">
-                <dt className="text-base font-semibold leading-7 text-gray-900">
-                  <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600">
-                    <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-                    </svg>
-                  </div>
-                  Easy Booking
-                </dt>
-                <dd className="mt-2 text-base leading-7 text-gray-600">
-                  Clients can easily book appointments with their preferred service providers.
-                </dd>
-              </div>
-              <div className="relative pl-16">
-                <dt className="text-base font-semibold leading-7 text-gray-900">
-                  <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600">
-                    <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                    </svg>
-                  </div>
-                  Role-Based Access
-                </dt>
-                <dd className="mt-2 text-base leading-7 text-gray-600">
-                  Different user roles (Admin, Staff, Client) with appropriate permissions and views.
-                </dd>
-              </div>
-              <div className="relative pl-16">
-                <dt className="text-base font-semibold leading-7 text-gray-900">
-                  <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600">
-                    <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
-                    </svg>
-                  </div>
-                  Status Tracking
-                </dt>
-                <dd className="mt-2 text-base leading-7 text-gray-600">
-                  Track appointment status from pending to approved, completed, or cancelled.
-                </dd>
-              </div>
-              <div className="relative pl-16">
-                <dt className="text-base font-semibold leading-7 text-gray-900">
-                  <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600">
-                    <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
-                    </svg>
-                  </div>
-                  Service Management
-                </dt>
-                <dd className="mt-2 text-base leading-7 text-gray-600">
-                  Admins can manage services, including pricing, duration, and descriptions.
-                </dd>
-              </div>
-            </dl>
+        ) : (
+          <div className="flex justify-center">
+            <Link to="/dashboard">
+              <Button variant="primary" size="large">
+                Go to Dashboard
+              </Button>
+            </Link>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
