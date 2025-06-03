@@ -42,16 +42,18 @@ const Register: React.FC = () => {
       setLoading(true);
       await register(formData.username, formData.email, formData.password);
       navigate('/appointments');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Registration error:', err);
-      if (err.response && err.response.data) {
+      if (err && typeof err === 'object' && 'response' in err && 
+          err.response && typeof err.response === 'object' && 
+          'data' in err.response && err.response.data) {
         // Handle API validation errors
-        const serverErrors = err.response.data;
-        const errorMessages = [];
+        const serverErrors = err.response.data as Record<string, unknown>;
+        const errorMessages: string[] = [];
         
         for (const key in serverErrors) {
           if (Array.isArray(serverErrors[key])) {
-            errorMessages.push(`${key}: ${serverErrors[key].join(', ')}`);
+            errorMessages.push(`${key}: ${(serverErrors[key] as string[]).join(', ')}`);
           }
         }
         
