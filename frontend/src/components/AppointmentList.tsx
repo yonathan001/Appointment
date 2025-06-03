@@ -177,6 +177,13 @@ const AppointmentList: React.FC = () => {
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <Link 
+                  to={`/appointments/${appointment.id}`}
+                  className="text-indigo-600 hover:text-indigo-900 mr-2"
+                >
+                  View Details
+                </Link>
+                
                 {/* Staff and Admin can update status */}
                 {(user?.role === 'admin' || user?.role === 'staff') && appointment.status === 'pending' && (
                   <button

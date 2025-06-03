@@ -10,6 +10,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Appointments from './pages/Appointments';
 import BookAppointment from './pages/BookAppointment';
+import AppointmentDetail from './pages/AppointmentDetail';
+import RescheduleAppointment from './pages/RescheduleAppointment';
 import Services from './pages/Services';
 import Users from './pages/Users';
 
@@ -40,6 +42,24 @@ const App: React.FC = () => {
                 element={
                   <PrivateRoute requiredRole="client">
                     <BookAppointment />
+                  </PrivateRoute>
+                } 
+              />
+              
+              <Route 
+                path="/appointments/reschedule/:id" 
+                element={
+                  <PrivateRoute>
+                    <RescheduleAppointment />
+                  </PrivateRoute>
+                } 
+              />
+              
+              <Route 
+                path="/appointments/:id" 
+                element={
+                  <PrivateRoute>
+                    <AppointmentDetail />
                   </PrivateRoute>
                 } 
               />
