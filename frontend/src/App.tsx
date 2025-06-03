@@ -12,6 +12,7 @@ import Appointments from './pages/Appointments';
 import BookAppointment from './pages/BookAppointment';
 import AppointmentDetail from './pages/AppointmentDetail';
 import RescheduleAppointment from './pages/RescheduleAppointment';
+import Calendar from './pages/Calendar';
 import Services from './pages/Services';
 import Users from './pages/Users';
 
@@ -33,6 +34,15 @@ const App: React.FC = () => {
                 element={
                   <PrivateRoute>
                     <Appointments />
+                  </PrivateRoute>
+                } 
+              />
+              
+              <Route 
+                path="/calendar" 
+                element={
+                  <PrivateRoute>
+                    <Calendar />
                   </PrivateRoute>
                 } 
               />

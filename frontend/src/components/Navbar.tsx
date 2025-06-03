@@ -34,6 +34,10 @@ const Navbar: React.FC = () => {
                   Appointments
                 </Link>
                 
+                <Link to="/calendar" className="hover:bg-blue-700 px-3 py-2 rounded">
+                  Calendar
+                </Link>
+                
                 {user && user.role === 'admin' && (
                   <>
                     <Link to="/users" className="hover:bg-blue-700 px-3 py-2 rounded">
@@ -113,6 +117,14 @@ const Navbar: React.FC = () => {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Appointments
+                </Link>
+                
+                <Link
+                  to="/calendar"
+                  className="block px-3 py-2 rounded hover:bg-blue-800"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Calendar
                 </Link>
                 
                 {user && user.role === 'admin' && (

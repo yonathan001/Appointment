@@ -145,9 +145,20 @@ const Dashboard: React.FC = () => {
       <div className="bg-white rounded-lg shadow-md mb-8">
         <div className="flex justify-between items-center p-6 border-b">
           <h2 className="text-lg font-semibold text-gray-800">Recent Appointments</h2>
-          <Link to="/appointments" className="text-blue-600 hover:text-blue-800">
-            View All
-          </Link>
+          <div className="flex space-x-4">
+            <Link to="/appointments" className="text-blue-600 hover:text-blue-800 flex items-center">
+              <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+              </svg>
+              List View
+            </Link>
+            <Link to="/calendar" className="text-blue-600 hover:text-blue-800 flex items-center">
+              <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              Calendar View
+            </Link>
+          </div>
         </div>
         
         <div className="p-6">
