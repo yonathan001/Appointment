@@ -52,9 +52,9 @@ const Navbar: React.FC = () => {
                 )}
                 
                 <div className="px-3 py-2">
-                  <span className="mr-2">Welcome, {user?.username}</span>
+                  <span className="mr-2">Welcome, {user ? user.username : ''}</span>
                   <span className="bg-blue-800 px-2 py-1 rounded text-xs">
-                    {user?.role.charAt(0).toUpperCase() + user?.role.slice(1)}
+                    {user && user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : ''}
                   </span>
                 </div>
                 
@@ -145,9 +145,9 @@ const Navbar: React.FC = () => {
                 )}
                 
                 <div className="px-3 py-2">
-                  <span className="mr-2">Welcome, {user?.username}</span>
+                  <span className="mr-2">Welcome, {user ? user.username : ''}</span>
                   <span className="bg-blue-800 px-2 py-1 rounded text-xs">
-                    {user?.role.charAt(0).toUpperCase() + user?.role.slice(1)}
+                    {user && user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : ''}
                   </span>
                 </div>
                 
