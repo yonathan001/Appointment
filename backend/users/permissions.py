@@ -39,3 +39,30 @@ class IsOwnerOrReadOnly(BasePermission):
         # For a CustomUser object, 'obj' would be the user instance.
         # For an Appointment, 'obj.client' might be the owner.
         return obj == request.user # Example: if the object itself is the user
+
+class IsOwnerOrAdmin(BasePermission):
+    """
+    Allows full access to the owner of the object or admin users.
+    """
+    def has_object_permission(self, request, view, obj):
+        # obj is the CustomUser instance being accessed.
+        # Allow if the request.user is the object itself (the owner),
+        # or if the request.user is an admin.
+        return obj == request.user or \
+               (request.user and request.user.is_authenticated and request.user.role == 'admin')
+
+class IsAppointmentOwner(BasePermission):
+    """
+    Allows access only to the client who owns the appointment.
+    """
+    def has_object_permission(self, request, view, obj):
+        # obj is the Appointment instance.
+        return obj.client == request.user
+
+class IsAppointmentStaff(BasePermission):
+    """
+    Allows access only to the staff member assigned to the appointment.
+    """
+    def has_object_permission(self, request, view, obj):
+        # obj is the Appointment instance.
+        return obj.staff == request.user

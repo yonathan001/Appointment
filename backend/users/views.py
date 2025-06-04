@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from .models import CustomUser
 from .serializers import UserSerializer
-# from rest_framework.permissions import IsAdminUser # Example for more specific permissions
+from .permissions import IsAdminUser, IsOwnerOrAdmin
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -9,6 +9,20 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = CustomUser.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
-    # permission_classes = [IsAdminUser] # For stricter control, e.g., only admins can manage users
-    # For now, we'll rely on the default IsAuthenticated from settings.py
+
+    def get_permissions(self):
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        """
+        if self.action == 'create' or self.action == 'list':
+            # Only admins can create new users or list all users
+            permission_classes = [IsAdminUser]
+        elif self.action in ['retrieve', 'update', 'partial_update', 'destroy']:
+            # For actions on a specific user instance,
+            # allow if the user is the owner or an admin.
+            permission_classes = [IsOwnerOrAdmin]
+        else:
+            # Default to IsAdminUser for any other actions (e.g., custom actions)
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
 

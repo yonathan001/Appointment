@@ -1,7 +1,8 @@
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 from .models import Service
 from .serializers import ServiceSerializer
-# from rest_framework.permissions import IsAdminUser # Or custom permissions for who can manage services
+from users.permissions import IsAdminUser # Import our custom permission
 
 class ServiceViewSet(viewsets.ModelViewSet):
     """
@@ -9,5 +10,16 @@ class ServiceViewSet(viewsets.ModelViewSet):
     """
     queryset = Service.objects.all().order_by('name')
     serializer_class = ServiceSerializer
-    # permission_classes = [IsAdminUser] # Example: Only admins can create/edit services
+
+    def get_permissions(self):
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        """
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            # For actions that modify data, only allow admin users
+            permission_classes = [IsAdminUser]
+        else:
+            # For list and retrieve actions, allow any authenticated user
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
 
