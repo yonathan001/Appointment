@@ -5,7 +5,7 @@ const HomePage: React.FC = () => {
   const isAuthenticated = !!localStorage.getItem('accessToken');
   const userRole = localStorage.getItem('userRole');
 
-  let dashboardPath = '/login'; // Default to login if not authenticated
+  let dashboardPath = '/login'; // Default to login if not authenticated or role unknown
   if (isAuthenticated) {
     switch (userRole) {
       case 'admin':
@@ -18,41 +18,44 @@ const HomePage: React.FC = () => {
         dashboardPath = '/client/dashboard';
         break;
       default:
-        dashboardPath = '/'; // Or some other appropriate default
+        // If role is unknown but authenticated, perhaps a generic dashboard or logout/error
+        // For now, let's keep it simple and assume role will be set upon login.
+        // If not, they might see 'Go to Dashboard' leading to /login if role is null.
+        // This could be improved by fetching user profile if role is missing but token exists.
+        dashboardPath = '/'; // Fallback, ideally should not happen if login sets role
     }
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-128px)] bg-gradient-to-br from-sky-500 to-indigo-600 text-white p-6">
-      <div className="text-center bg-white bg-opacity-20 backdrop-blur-md p-10 rounded-xl shadow-2xl">
-        <h1 className="text-5xl font-extrabold mb-6">
-          Welcome to AppointmentSys
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] bg-slate-50 text-gray-800 px-4 sm:px-6 lg:px-8">
+      <div className="text-center max-w-2xl py-12">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6">
+          Manage Your Appointments <span className="text-indigo-600">Effortlessly</span>.
         </h1>
-        <p className="text-xl mb-8 max-w-2xl">
-          Streamline your scheduling, manage appointments with ease, and connect with clients and staff efficiently. 
-          Our platform is designed to simplify your workflow.
+        <p className="text-lg sm:text-xl text-slate-600 mb-10">
+          Book, schedule, and organize with ease. Our platform simplifies your workflow, connecting you seamlessly with clients and staff.
         </p>
-        <div className="space-x-4">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
           {isAuthenticated ? (
-            <Link 
+            <Link
               to={dashboardPath}
-              className="bg-white text-indigo-600 font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-indigo-100 transition-all duration-300 ease-in-out transform hover:scale-105"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200 shadow-sm"
             >
               Go to Dashboard
             </Link>
           ) : (
             <>
-              <Link 
-                to="/login"
-                className="bg-white text-indigo-600 font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-indigo-100 transition-all duration-300 ease-in-out transform hover:scale-105"
-              >
-                Login
-              </Link>
-              <Link 
+              <Link
                 to="/register"
-                className="bg-transparent border-2 border-white text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-white hover:text-indigo-600 transition-all duration-300 ease-in-out transform hover:scale-105"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200 shadow-sm"
               >
-                Register
+                Get Started
+              </Link>
+              <Link
+                to="/login"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 border border-indigo-600 text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200 shadow-sm"
+              >
+                Sign In
               </Link>
             </>
           )}

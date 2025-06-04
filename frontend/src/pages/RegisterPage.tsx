@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { registerUser, UserData } from '../services/api';
+import { registerUser } from '../services/api';
+import type { UserData } from '../services/api';
 
 const RegisterPage: React.FC = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  // const [role, setRole] = useState<'client' | 'staff' | 'admin'>('client'); // Default role
+  const [role, setRole] = useState<'client' | 'staff'>('client'); // Default to client, allow staff
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +29,7 @@ const RegisterPage: React.FC = () => {
       username, 
       email, 
       password, 
-      // role // Include role if you allow users to select it during registration
+      role // Include role if you allow users to select it during registration
     };
 
     try {
@@ -122,22 +123,22 @@ const RegisterPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Optional: Role selection during registration 
+          Optional: Role selection during registration 
           <div className="mt-4">
             <label htmlFor="role" className="block text-sm font-medium text-gray-700">Register as:</label>
             <select 
               id="role" 
               name="role" 
               value={role} 
-              onChange={(e) => setRole(e.target.value as 'client' | 'staff' | 'admin')}
+              onChange={(e) => setRole(e.target.value as 'client' | 'staff')}
               className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
             >
               <option value="client">Client</option>
               <option value="staff">Staff</option>
-              <option value="admin">Admin</option> // Usually admin is not self-registered
+              {/* <option value="admin">Admin</option> // Usually admin is not self-registered */}
             </select>
           </div>
-          */}
+         
 
           <div>
             <button
