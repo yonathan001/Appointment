@@ -3,48 +3,44 @@ import React, { useState } from 'react';
 interface FAQItemProps {
   question: string;
   answer: string;
+  isFirst?: boolean;
 }
 
-const FAQItem: React.FC<FAQItemProps> = ({ question, answer }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const FAQItem: React.FC<FAQItemProps> = ({ question, answer, isFirst = false }) => {
+  const [isOpen, setIsOpen] = useState(isFirst);
 
   return (
-    <div className="bg-white rounded-lg shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl border border-slate-200/80">
-      <dt>
-        <button 
-          onClick={() => setIsOpen(!isOpen)} 
-          className="text-left w-full flex justify-between items-center p-6 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-opacity-75 rounded-lg"
-          aria-expanded={isOpen}
-        >
-          <span className="text-lg font-semibold text-indigo-700 hover:text-indigo-800 transition-colors">{question}</span>
-          <span className="ml-6 h-7 flex items-center text-indigo-500">
-            {isOpen ? (
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-              </svg>
-            )}
-          </span>
-        </button>
-      </dt>
+    <div className={`border-b border-gray-200 last:border-b-0 ${isOpen ? 'pb-4' : ''}`}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex justify-between items-start text-left py-6 focus:outline-none"
+        aria-expanded={isOpen}
+      >
+        <span className="text-lg font-medium text-gray-900">{question}</span>
+        <span className="ml-6 h-7 flex items-center text-gray-400">
+          {isOpen ? (
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 15l7-7 7 7" />
+            </svg>
+          ) : (
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+            </svg>
+          )}
+        </span>
+      </button>
       {isOpen && (
-        <dd className="p-6 pt-0">
-          <p className="text-slate-600 leading-relaxed">
+        <div className="pr-12">
+          <p className="text-gray-600 leading-relaxed">
             {answer}
           </p>
-        </dd>
+        </div>
       )}
     </div>
   );
 };
 
 const FAQPage: React.FC = () => {
-  // Initialize first FAQ item as open by default, if desired
-  // For this, you'd need to manage open states in the parent or pass an initialOpen prop.
-  // For simplicity, keeping all closed by default here.
   const faqs = [
     {
       question: 'How do I create an account?',
@@ -73,26 +69,33 @@ const FAQPage: React.FC = () => {
   ];
 
   return (
-    <div className="bg-slate-50 min-h-[calc(100vh-128px)] selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-white">
       {/* Header Section */}
-      <div className="bg-gradient-to-br from-teal-500 via-cyan-500 to-sky-600 text-white py-20 sm:py-28 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl sm:text-6xl font-bold tracking-tighter leading-tight mb-6">
+      <div className="bg-white py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto text-center">
+          <h1 className="text-3xl font-medium text-gray-900 sm:text-4xl mb-4">
             Frequently Asked Questions
           </h1>
-          <p className="text-lg sm:text-xl text-teal-100 max-w-2xl mx-auto">
-            Have questions? We've got answers. Explore our FAQ to find solutions to common inquiries about AppointmentSys.
+          <p className="text-lg text-gray-600">
+            Everything you need to know about our service.
           </p>
         </div>
       </div>
 
-      {/* FAQ Accordion Section */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-        <dl className="space-y-6">
-          {faqs.map((faq, index) => (
-            <FAQItem key={index} question={faq.question} answer={faq.answer} />
-          ))}
-        </dl>
+      {/* FAQ Section */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+        <div className="bg-white rounded-lg">
+          <dl className="divide-y divide-gray-200">
+            {faqs.map((faq, index) => (
+              <FAQItem 
+                key={index} 
+                question={faq.question} 
+                answer={faq.answer} 
+                isFirst={index === 0} 
+              />
+            ))}
+          </dl>
+        </div>
       </div>
     </div>
   );
