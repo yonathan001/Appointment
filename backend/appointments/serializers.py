@@ -8,8 +8,9 @@ from services.serializers import ServiceSerializer
 class AppointmentSerializer(serializers.ModelSerializer):
     # Fields for writing (accepting IDs)
     client = serializers.PrimaryKeyRelatedField(
-        queryset=CustomUser.objects.all()
-        # In a ViewSet, this would often be set to request.user automatically on create
+        queryset=CustomUser.objects.all(),
+        required=False # Allow it to be set by perform_create for client role
+        # Admins/Staff creating appointments might still need to provide it in the request data.
     )
     staff = serializers.PrimaryKeyRelatedField(
         queryset=CustomUser.objects.filter(role='staff'),

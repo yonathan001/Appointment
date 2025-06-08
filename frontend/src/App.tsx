@@ -1,13 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react'; // Removed useEffect, useState as they are no longer directly used in App component
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext'; // Import AuthProvider and useAuth
 import Navbar from './components/Navbar';
+import Footer from './components/Footer'; // Import the Footer component
+import ScrollToTop from './components/ScrollToTop'; // Import ScrollToTop
 import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
+import ContactUsPage from './pages/ContactUsPage'; // Added import
+import FAQPage from './pages/FAQPage'; // Added import
 import './App.css'; // Import App.css
 
 // Dashboard Components
-import ClientDashboardPage from './pages/ClientDashboardPage';
+import ClientDashboardPage from './pages/client/ClientDashboardPage';
+import BookAppointmentPage from './pages/client/BookAppointmentPage'; // Added import
 // Placeholder for future staff and admin dashboard pages
 const StaffDashboard = () => <div className="container mx-auto p-4"><h1 className='text-3xl font-semibold'>Staff Dashboard</h1><p className='mt-2 text-gray-700'>Manage your assigned appointments and schedule.</p></div>;
 const AdminDashboard = () => <div className="container mx-auto p-4"><h1 className='text-3xl font-semibold'>Admin Dashboard</h1><p className='mt-2 text-gray-700'>Oversee users, services, and all appointments.</p></div>;
@@ -19,13 +25,19 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, allowedRoles }) => {
-  const isAuthenticated = !!localStorage.getItem('accessToken');
-  const userRole = localStorage.getItem('userRole') as 'admin' | 'client' | 'staff' | null;
+  const { isAuthenticated, user, isLoading } = useAuth();
   const location = useLocation();
+
+  if (isLoading) {
+    // You might want to render a loading spinner here
+    return <div className="flex justify-center items-center h-screen"><p className="text-xl">Loading...</p></div>;
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
+
+  const userRole = user?.role;
 
   if (allowedRoles && userRole && !allowedRoles.includes(userRole)) {
     // User is authenticated but does not have the required role
@@ -38,53 +50,49 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, allowedRoles }
 };
 
 const App: React.FC = () => {
-  // This state and effect ensure the app re-renders if auth state changes, 
-  // which helps ProtectedRoute to re-evaluate.
-  const [, setAuthCheck] = useState(0);
-  useEffect(() => {
-    const handleAuthChange = () => {
-      setAuthCheck(c => c + 1);
-    };
-    window.addEventListener('authChange', handleAuthChange);
-    return () => window.removeEventListener('authChange', handleAuthChange);
-  }, []);
-
+  // The AuthProvider will manage authentication state.
+  // The useEffect for 'authChange' and setAuthCheck state are no longer needed.
   return (
+    <AuthProvider>
+      <ScrollToTop />
+      <div className="flex flex-col min-h-screen">
+        <Navbar />
+        <main className="flex-grow container mx-auto mt-4 p-4">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/contact" element={<ContactUsPage />} />
+            <Route path="/faq" element={<FAQPage />} />
 
-    
-    <div className="flex flex-col min-h-screen bg-gray-100 font-sans">
-      <Navbar />
-      <main className="flex-grow pt-4 pb-8">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+            {/* Client Routes */}
+            <Route 
+              path="/client/dashboard"
+              element={<ProtectedRoute element={<ClientDashboardPage />} allowedRoles={['client', 'admin']} />}
+            />
+            <Route 
+              path="/book-appointment"
+              element={<ProtectedRoute element={<BookAppointmentPage />} allowedRoles={['client', 'admin']} />}
+            />
+            
+            {/* Staff Routes */}
+            <Route 
+              path="/staff/dashboard"
+              element={<ProtectedRoute element={<StaffDashboard />} allowedRoles={['staff', 'admin']} />}
+            />
 
-          {/* Client Routes */}
-          <Route 
-            path="/client/dashboard"
-            element={<ProtectedRoute element={<ClientDashboardPage />} allowedRoles={['client', 'admin']} />}
-          />
-          
-          {/* Staff Routes */}
-          <Route 
-            path="/staff/dashboard"
-            element={<ProtectedRoute element={<StaffDashboard />} allowedRoles={['staff', 'admin']} />}
-          />
-
-          {/* Admin Routes */}
-          <Route 
-            path="/admin/dashboard"
-            element={<ProtectedRoute element={<AdminDashboard />} allowedRoles={['admin']} />}
-          />
-          
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </main>
-      <footer className="bg-gray-800 text-white text-center p-4 mt-auto">
-        <p>&copy; {new Date().getFullYear()} AppointmentSys. All rights reserved.</p>
-      </footer>
-    </div>
+            {/* Admin Routes */}
+            <Route 
+              path="/admin/dashboard"
+              element={<ProtectedRoute element={<AdminDashboard />} allowedRoles={['admin']} />}
+            />
+            
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </AuthProvider>
   );
 };
 
