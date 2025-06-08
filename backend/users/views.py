@@ -1,4 +1,6 @@
 from rest_framework import viewsets, permissions
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from .models import CustomUser
 from .serializers import UserSerializer
 from .permissions import IsAdminUser, IsOwnerOrAdmin
@@ -29,3 +31,7 @@ class UserViewSet(viewsets.ModelViewSet):
             permission_classes = [permissions.IsAuthenticated] # Or IsAdminUser if stricter default needed
         return [permission() for permission in permission_classes]
 
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def me(self, request):
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)
