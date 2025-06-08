@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { fetchClientAppointments, cancelAppointment } from '../services/api';
-import type { Appointment } from '../services/api';
+import { Link } from 'react-router-dom';
+import { fetchClientAppointments, cancelAppointment } from '../../services/api'; // Adjusted import path
+import type { Appointment } from '../../services/api'; // Adjusted import path
 
 const ClientDashboardPage: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -29,7 +30,7 @@ const ClientDashboardPage: React.FC = () => {
     setCancellingId(id);
     try {
       await cancelAppointment(id);
-      fetchAppointments();
+      fetchAppointments(); // Refresh list
     } catch (err: any) {
       alert('Failed to cancel appointment.');
     }
@@ -84,12 +85,12 @@ const ClientDashboardPage: React.FC = () => {
         </div>
       )}
       <div className="mt-8 flex justify-end">
-        <a
-          href="/book-appointment"
+        <Link
+          to="/book-appointment"
           className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 font-semibold transition"
         >
           Book New Appointment
-        </a>
+        </Link>
       </div>
     </div>
   );

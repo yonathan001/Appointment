@@ -2,14 +2,18 @@ import React from 'react'; // Removed useEffect, useState as they are no longer 
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext'; // Import AuthProvider and useAuth
 import Navbar from './components/Navbar';
+import Footer from './components/Footer'; // Import the Footer component
+import ScrollToTop from './components/ScrollToTop'; // Import ScrollToTop
 import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
+import ContactUsPage from './pages/ContactUsPage'; // Added import
+import FAQPage from './pages/FAQPage'; // Added import
 import './App.css'; // Import App.css
 
 // Dashboard Components
-import ClientDashboardPage from './pages/ClientDashboardPage';
-import BookAppointmentPage from './pages/BookAppointmentPage'; // Added import
+import ClientDashboardPage from './pages/client/ClientDashboardPage';
+import BookAppointmentPage from './pages/client/BookAppointmentPage'; // Added import
 // Placeholder for future staff and admin dashboard pages
 const StaffDashboard = () => <div className="container mx-auto p-4"><h1 className='text-3xl font-semibold'>Staff Dashboard</h1><p className='mt-2 text-gray-700'>Manage your assigned appointments and schedule.</p></div>;
 const AdminDashboard = () => <div className="container mx-auto p-4"><h1 className='text-3xl font-semibold'>Admin Dashboard</h1><p className='mt-2 text-gray-700'>Oversee users, services, and all appointments.</p></div>;
@@ -50,13 +54,16 @@ const App: React.FC = () => {
   // The useEffect for 'authChange' and setAuthCheck state are no longer needed.
   return (
     <AuthProvider>
-      <div className="flex flex-col min-h-screen bg-gray-100 font-sans">
+      <ScrollToTop />
+      <div className="flex flex-col min-h-screen">
         <Navbar />
-        <main className="flex-grow pt-4 pb-8">
+        <main className="flex-grow container mx-auto mt-4 p-4">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/contact" element={<ContactUsPage />} />
+            <Route path="/faq" element={<FAQPage />} />
 
             {/* Client Routes */}
             <Route 
@@ -83,9 +90,7 @@ const App: React.FC = () => {
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
-        <footer className="bg-gray-800 text-white text-center p-4 mt-auto">
-          <p>&copy; {new Date().getFullYear()} AppointmentSys. All rights reserved.</p>
-        </footer>
+        <Footer />
       </div>
     </AuthProvider>
   );

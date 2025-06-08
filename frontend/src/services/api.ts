@@ -54,6 +54,15 @@ export interface Appointment {
   service_details?: Service;
 }
 
+
+export interface CreateAppointmentPayload {
+  service: number; // ID of the service
+  date: string;    // YYYY-MM-DD
+  time: string;    // HH:MM or HH:MM:SS
+  notes?: string;
+  // staff?: number; // Optional: if staff selection is implemented
+}
+
 export interface Service {
   id: number;
   name: string;
@@ -84,4 +93,14 @@ export const fetchUserProfile = () => {
   // Ensure this endpoint exists on your backend (e.g., /api/users/me/)
   // It should return details of the authenticated user based on the token.
   return apiClient.get<UserData>('/users/me/'); 
+};
+
+// Fetch all services
+export const fetchServices = () => {
+  return apiClient.get<Service[]>('/services/');
+};
+
+// Create a new appointment
+export const createAppointment = (data: CreateAppointmentPayload) => {
+  return apiClient.post<Appointment>('/appointments/', data);
 };
