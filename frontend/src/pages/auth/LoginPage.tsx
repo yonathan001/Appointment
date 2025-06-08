@@ -62,7 +62,7 @@ const LoginPage: React.FC = () => {
               autoComplete="username"
               required
               className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-150 ease-in-out"
-              placeholder="your_username"
+              placeholder="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
@@ -79,7 +79,7 @@ const LoginPage: React.FC = () => {
               autoComplete="current-password"
               required
               className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition duration-150 ease-in-out"
-              placeholder="••••••••"
+              placeholder="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
