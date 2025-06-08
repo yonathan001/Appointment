@@ -9,6 +9,8 @@ import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import ContactUsPage from './pages/ContactUsPage'; // Added import
 import FAQPage from './pages/FAQPage'; // Added import
+import ClientSettingsPage from './pages/client/ClientSettingsPage';
+import NotificationPage from './pages/client/NotificationPage';
 import './App.css'; // Import App.css
 
 // Dashboard Components
@@ -64,6 +66,8 @@ const App: React.FC = () => {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/contact" element={<ContactUsPage />} />
             <Route path="/faq" element={<FAQPage />} />
+            <Route path="/client/settings" element={<ProtectedRoute element={<ClientSettingsPage />} allowedRoles={['client']} />} />
+            <Route path="/client/notifications" element={<ProtectedRoute element={<NotificationPage />} allowedRoles={['client']} />} />
 
             {/* Client Routes */}
             <Route 
