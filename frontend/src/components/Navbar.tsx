@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { Cog6ToothIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/solid';
+import { BellIcon, CalendarDaysIcon } from '@heroicons/react/24/outline';
 
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -8,6 +10,24 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, user, logout } = useAuth();
+  const profileDropdownRef = React.useRef<HTMLDivElement>(null);
+
+  // Close profile dropdown when clicking outside
+  React.useEffect(() => {
+    if (!isProfileOpen) return;
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsProfileOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isProfileOpen]);
 
   const handleLogout = async () => {
     try {
@@ -76,8 +96,15 @@ const Navbar: React.FC = () => {
                   </Link>
                 )}
 
+                {/* Notification Bell Icon */}
+                <Link to="/client/notifications" className="ml-2 p-1 rounded hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500" title="Notifications">
+                  <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  </svg>
+                </Link>
+
                 {/* Profile Dropdown */}
-                <div className="relative ml-2">
+                <div className="relative ml-2" ref={profileDropdownRef}>
                   <button
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
                     className="flex items-center space-x-1 p-1 rounded hover:bg-gray-800"
@@ -106,14 +133,21 @@ const Navbar: React.FC = () => {
                   </button>
 
                   {isProfileOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg py-1 border border-gray-700">
-                      <div className="px-4 py-2 text-xs text-gray-400 border-b border-gray-700">
-                        {user?.email}
-                      </div>
+                    <div className="py-1 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 absolute right-0 mt-2 min-w-[180px] z-50">
+                      <div className="px-4 py-2 text-xs text-gray-500 border-b">Signed in as <span className="font-semibold">{user?.username}</span></div>
+                      <Link
+                        to="/client/settings"
+                        className="flex items-center px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 hover:text-indigo-600 transition w-full"
+                        onClick={() => setIsProfileOpen(false)}
+                      >
+                        <Cog6ToothIcon className="w-5 h-5 mr-2 text-indigo-400" />
+                        Settings
+                      </Link>
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left px-4 py-2 text-xs text-red-400 hover:bg-gray-700 hover:text-red-300"
+                        className="w-full flex items-center px-4 py-2 text-xs text-red-400 hover:bg-gray-700 hover:text-red-300"
                       >
+                        <ArrowRightOnRectangleIcon className="w-5 h-5 mr-2 text-red-400" />
                         Sign Out
                       </button>
                     </div>
@@ -168,20 +202,14 @@ const Navbar: React.FC = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-gray-900 border-t border-gray-800">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            <Link
-              to="/"
-              className={`${mobileLinkClasses} ${activePath === '/' ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-800'}`}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Home
-            </Link>
+           
 
             {isAuthenticated ? (
               <>
                 {userRole === 'admin' && (
                   <Link
                     to="/admin/dashboard"
-                    className={`${mobileLinkClasses} ${activePath.startsWith('/admin') ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-800'}`}
+                    className={`${mobileLinkClasses} ${activePath === '/admin/dashboard' ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-800'}`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Admin Dashboard
@@ -190,7 +218,7 @@ const Navbar: React.FC = () => {
                 {userRole === 'staff' && (
                   <Link
                     to="/staff/dashboard"
-                    className={`${mobileLinkClasses} ${activePath.startsWith('/staff') ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-800'}`}
+                    className={`${mobileLinkClasses} ${activePath === '/staff/dashboard' ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-800'}`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Staff Dashboard
@@ -199,19 +227,46 @@ const Navbar: React.FC = () => {
                 {userRole === 'client' && (
                   <Link
                     to="/client/dashboard"
-                    className={`${mobileLinkClasses} ${activePath.startsWith('/client') ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-800'}`}
+                    className={`flex items-center px-3 py-2 text-xs rounded transition ${activePath === '/client/dashboard' ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-800'}`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Appointments
+                    <CalendarDaysIcon className="w-5 h-5 mr-2 text-indigo-400" />
+                    My Appointments
                   </Link>
                 )}
 
                 <div className="pt-2 border-t border-gray-800">
-                  <div className="px-3 py-2 text-xs text-gray-400">{user?.email}</div>
+                  <div className="flex flex-col gap-1 mb-1 mt-2">
+                    {/* Notifications Link (Client Only) */}
+                    {userRole === 'client' && (
+                      <Link
+                        to="/client/notifications"
+                        className={`flex items-center px-3 py-2 text-xs rounded transition ${activePath === '/client/notifications' ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-800'}`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <BellIcon className="w-5 h-5 mr-2 text-indigo-400" />
+                        Notifications
+                      </Link>
+                    )}
+                    {/* Settings Link (Client Only) */}
+                    {userRole === 'client' && (
+                      <Link
+                        to="/client/settings"
+                        className={`flex items-center px-3 py-2 text-xs rounded transition ${activePath === '/client/settings' ? 'bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-800'}`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <Cog6ToothIcon className="w-5 h-5 mr-2 text-indigo-400" />
+                        Settings
+                      </Link>
+                    )}
+                  </div>
+                  {/* Signed in as username above Sign Out */}
+                  <div className="px-4 py-2 text-xs text-gray-400 border-t border-gray-700">Signed in as <span className="font-semibold">{user?.username}</span></div>
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-3 py-2 text-xs text-red-400 hover:bg-gray-700 hover:text-red-300"
+                    className="w-full flex items-center px-3 py-2 text-xs text-red-400 hover:bg-gray-700 hover:text-red-300"
                   >
+                    <ArrowRightOnRectangleIcon className="w-5 h-5 mr-2 text-red-400" />
                     Sign Out
                   </button>
                 </div>
