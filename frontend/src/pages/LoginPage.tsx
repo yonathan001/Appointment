@@ -23,6 +23,7 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
+    console.log('Attempting to log in with:', { username, password }); // Added for debugging
     try {
       const loginResponse = await loginUser({ username, password });
       localStorage.setItem('accessToken', loginResponse.data.access);

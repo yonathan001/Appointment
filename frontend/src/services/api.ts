@@ -84,6 +84,39 @@ export interface UserData {
   last_name?: string;
 }
 
+// Appointment type (matches backend fields)
+export interface Appointment {
+  id: number;
+  client: number;
+  staff: number;
+  service: number;
+  date: string;
+  time: string;
+  status: 'pending' | 'approved' | 'completed' | 'cancelled';
+  notes?: string;
+  client_details?: UserData;
+  staff_details?: UserData;
+  service_details?: Service;
+}
+
+export interface Service {
+  id: number;
+  name: string;
+  description: string;
+  duration: number;
+  price: number;
+}
+
+// Fetch client appointments (for logged-in user)
+export const fetchClientAppointments = () => {
+  return apiClient.get<Appointment[]>('/appointments/');
+};
+
+// Cancel appointment by ID
+export const cancelAppointment = (id: number) => {
+  return apiClient.patch(`/appointments/${id}/`, { status: 'cancelled' });
+};
+
 export const loginUser = (data: Pick<UserData, 'username' | 'password'>) => {
   return apiClient.post<AuthResponse>('/token/', data);
 };

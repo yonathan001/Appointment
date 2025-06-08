@@ -40,11 +40,22 @@ const RegisterPage: React.FC = () => {
     } catch (err: any) {
       if (err.response && err.response.data) {
         const apiErrors = err.response.data;
-        // Format API errors for display (this is a basic example)
-        const errorMessages = Object.entries(apiErrors)
-          .map(([key, value]) => `${key}: ${(value as string[]).join(', ')}`)
-          .join('\n');
-        setError(errorMessages || 'Registration failed. Please try again.');
+        let formattedErrors = '';
+        if (typeof apiErrors === 'string') {
+          formattedErrors = apiErrors;
+        } else if (apiErrors && typeof apiErrors === 'object') {
+          formattedErrors = Object.entries(apiErrors)
+            .map(([key, value]) => {
+              if (Array.isArray(value)) {
+                return `${key}: ${value.join(', ')}`;
+              } else if (typeof value === 'string') {
+                return `${key}: ${value}`;
+              }
+              return `${key}: An unexpected error format was received.`; // Fallback for other types
+            })
+            .join('\n');
+        }
+        setError(formattedErrors || 'Registration failed. Please try again.');
       } else {
         setError('Registration failed. An unexpected error occurred.');
       }

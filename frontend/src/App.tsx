@@ -6,8 +6,9 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import './App.css'; // Import App.css
 
-// Placeholder Dashboard Components
-const ClientDashboard = () => <div className="container mx-auto p-4"><h1 className='text-3xl font-semibold'>Client Dashboard</h1><p className='mt-2 text-gray-700'>Your appointments and personal information.</p></div>;
+// Dashboard Components
+import ClientDashboardPage from './pages/ClientDashboardPage';
+// Placeholder for future staff and admin dashboard pages
 const StaffDashboard = () => <div className="container mx-auto p-4"><h1 className='text-3xl font-semibold'>Staff Dashboard</h1><p className='mt-2 text-gray-700'>Manage your assigned appointments and schedule.</p></div>;
 const AdminDashboard = () => <div className="container mx-auto p-4"><h1 className='text-3xl font-semibold'>Admin Dashboard</h1><p className='mt-2 text-gray-700'>Oversee users, services, and all appointments.</p></div>;
 const NotFoundPage = () => <div className="container mx-auto p-4 text-center"><h1 className='text-4xl font-bold text-red-600'>404 - Page Not Found</h1><p className='mt-4 text-lg'>Sorry, the page you are looking for does not exist.</p></div>;
@@ -62,7 +63,7 @@ const App: React.FC = () => {
           {/* Client Routes */}
           <Route 
             path="/client/dashboard"
-            element={<ProtectedRoute element={<ClientDashboard />} allowedRoles={['client', 'admin']} />}
+            element={<ProtectedRoute element={<ClientDashboardPage />} allowedRoles={['client', 'admin']} />}
           />
           
           {/* Staff Routes */}
