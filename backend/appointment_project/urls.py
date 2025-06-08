@@ -16,9 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include # Make sure include is imported
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
+from users.cookie_views import (
+    MyTokenObtainPairView,
+    MyTokenRefreshView,
+    LogoutView
 )
 
 urlpatterns = [
@@ -26,7 +27,8 @@ urlpatterns = [
     path('api/', include('users.urls')),
     path('api/', include('services.urls')),
     path('api/', include('appointments.urls')),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/auth/login/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'), # Renamed for clarity
+    path('api/auth/refresh/', MyTokenRefreshView.as_view(), name='token_refresh'),   # Renamed for clarity
+    path('api/auth/logout/', LogoutView.as_view(), name='logout'),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')), # Added for DRF login/logout
 ]

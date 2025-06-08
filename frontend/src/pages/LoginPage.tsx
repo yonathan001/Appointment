@@ -1,63 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { loginUser, fetchUserProfile } from '../services/api';
+import { useAuth } from '../contexts/AuthContext'; // Import useAuth
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null); // Renamed to avoid conflict with context error
+  const [formIsLoading, setFormIsLoading] = useState(false); // Renamed for clarity
   const navigate = useNavigate();
+  const { login, isAuthenticated, user, isLoading: authIsLoading } = useAuth(); // Removed error: authError
 
-  // Redirect if already logged in
   useEffect(() => {
-    if (localStorage.getItem('accessToken')) {
-      const role = localStorage.getItem('userRole');
-      if (role === 'admin') navigate('/admin/dashboard');
-      else if (role === 'staff') navigate('/staff/dashboard');
-      else navigate('/client/dashboard');
+    if (isAuthenticated && user) {
+      // User is authenticated, redirect based on role
+      if (user.role === 'admin') navigate('/admin/dashboard', { replace: true });
+      else if (user.role === 'staff') navigate('/staff/dashboard', { replace: true });
+      else navigate('/client/dashboard', { replace: true });
     }
-  }, [navigate]);
+  }, [isAuthenticated, user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setIsLoading(true);
-    console.log('Attempting to log in with:', { username, password }); // Added for debugging
+    setFormError(null);
+    setFormIsLoading(true);
     try {
-      const loginResponse = await loginUser({ username, password });
-      localStorage.setItem('accessToken', loginResponse.data.access);
-      localStorage.setItem('refreshToken', loginResponse.data.refresh);
-
-      // After successful login, fetch user profile to get the role
-      // This assumes your /api/token/ response doesn't include the role directly
-      // or you prefer a separate endpoint for user details.
-      try {
-        const profileResponse = await fetchUserProfile();
-        const userRole = profileResponse.data.role || 'client'; // Default to client if role not present
-        localStorage.setItem('userRole', userRole);
-        
-        // Dispatch a custom event to notify Navbar and other components about auth change
-        window.dispatchEvent(new Event('authChange'));
-
-        // Redirect based on role
-        if (userRole === 'admin') navigate('/admin/dashboard');
-        else if (userRole === 'staff') navigate('/staff/dashboard');
-        else navigate('/client/dashboard');
-
-      } catch (profileError: any) {
-        console.error('Failed to fetch user profile:', profileError);
-        setError('Login successful, but failed to retrieve user details. Please try refreshing.');
-        // Still dispatch authChange as token is set
-        window.dispatchEvent(new Event('authChange'));
-        // Potentially navigate to a generic page or show error prominently
-      }
-
+      await login({ username, password });
+      // Navigation is handled by the useEffect above once isAuthenticated and user are set
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Login failed. Please check your credentials.');
+      // err from login() in AuthContext might be already processed or a generic one.
+      // We can set a specific form error here or rely on authError from context.
+      setFormError(err.message || err.response?.data?.detail || 'Login failed. Please check your credentials.');
       console.error('Login error:', err);
     }
-    setIsLoading(false);
+    setFormIsLoading(false);
   };
 
   return (
@@ -69,7 +44,7 @@ const LoginPage: React.FC = () => {
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">{error}</div>}
+          {formError && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">{formError}</div>}
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="username" className="sr-only">Username</label>
@@ -104,10 +79,10 @@ const LoginPage: React.FC = () => {
           <div>
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={formIsLoading || authIsLoading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? 'Signing in...' : 'Sign in'}
+              {formIsLoading || authIsLoading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
         </form>

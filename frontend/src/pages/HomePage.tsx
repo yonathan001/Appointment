@@ -1,13 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const HomePage: React.FC = () => {
-  const isAuthenticated = !!localStorage.getItem('accessToken');
-  const userRole = localStorage.getItem('userRole');
+  const { isAuthenticated, user, isLoading } = useAuth(); // Use AuthContext
 
-  let dashboardPath = '/login'; // Default to login if not authenticated or role unknown
-  if (isAuthenticated) {
-    switch (userRole) {
+  let dashboardPath = '/login'; // Default to login
+  // isLoading will be true initially, during which isAuthenticated is false.
+  // Once loading is false, isAuthenticated and user will have their true values.
+  if (!isLoading && isAuthenticated && user) {
+    switch (user.role) {
       case 'admin':
         dashboardPath = '/admin/dashboard';
         break;
@@ -18,13 +20,15 @@ const HomePage: React.FC = () => {
         dashboardPath = '/client/dashboard';
         break;
       default:
-        // If role is unknown but authenticated, perhaps a generic dashboard or logout/error
-        // For now, let's keep it simple and assume role will be set upon login.
-        // If not, they might see 'Go to Dashboard' leading to /login if role is null.
-        // This could be improved by fetching user profile if role is missing but token exists.
-        dashboardPath = '/'; // Fallback, ideally should not happen if login sets role
+        // This case should ideally not be reached if roles are well-defined
+        // and user object is guaranteed when isAuthenticated is true.
+        dashboardPath = '/'; // Fallback to home or a generic authenticated page
     }
+  } else if (isLoading) {
+    // Optionally, handle the loading state for dashboardPath or button display
+    // For now, if loading, isAuthenticated is false, so login/register buttons will show.
   }
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] bg-slate-50 text-gray-800 px-4 sm:px-6 lg:px-8">

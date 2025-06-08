@@ -7,57 +7,12 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Send cookies with requests
 });
 
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-apiClient.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      try {
-        const refreshTokenValue = localStorage.getItem('refreshToken');
-        if (!refreshTokenValue) {
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('userRole');
-          window.dispatchEvent(new Event('authChange'));
-          // Consider redirecting to login, e.g., window.location.href = '/login';
-          return Promise.reject(new Error('No refresh token available. User logged out.'));
-        }
-        const { data } = await axios.post<AuthResponse>(`${API_BASE_URL}/token/refresh/`, { refresh: refreshTokenValue });
-        localStorage.setItem('accessToken', data.access);
-        if (data.refresh) localStorage.setItem('refreshToken', data.refresh);
-        
-        apiClient.defaults.headers.common['Authorization'] = 'Bearer ' + data.access;
-        originalRequest.headers['Authorization'] = 'Bearer ' + data.access;
-        window.dispatchEvent(new Event('authChange')); // Notify UI of new token
-        
-        return apiClient(originalRequest);
-      } catch (refreshError: any) {
-        console.error('Token refresh failed:', refreshError.message);
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('userRole');
-        window.dispatchEvent(new Event('authChange'));
-        return Promise.reject(refreshError);
-      }
-    }
-    return Promise.reject(error);
-  }
-);
+// Interceptors for adding Authorization header and refreshing tokens are removed.
+// Cookie-based authentication relies on the browser to send cookies automatically.
+// The backend will handle cookie validation and refresh if necessary.
 
 export default apiClient;
 
@@ -118,7 +73,7 @@ export const cancelAppointment = (id: number) => {
 };
 
 export const loginUser = (data: Pick<UserData, 'username' | 'password'>) => {
-  return apiClient.post<AuthResponse>('/token/', data);
+  return apiClient.post<AuthResponse>('/auth/login/', data); // Updated endpoint
 };
 
 export const registerUser = (data: UserData) => {

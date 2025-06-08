@@ -1,67 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { registerUser } from '../services/api';
-import type { UserData } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
 const RegisterPage: React.FC = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState<'client' | 'staff'>('client'); // Default to client, allow staff
-  const [error, setError] = useState<string | null>(null);
+  const [role, setRole] = useState<'client' | 'staff'>('client');
+  const [formError, setFormError] = useState<string | null>(null); // Renamed from error
   const [success, setSuccess] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [formIsLoading, setFormIsLoading] = useState(false); // Renamed from isLoading
   const navigate = useNavigate();
+  const { register, isAuthenticated, user, isLoading: authIsLoading } = useAuth(); // Removed error: authError
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      // User is already authenticated, redirect away from register page
+      if (user.role === 'admin') navigate('/admin/dashboard', { replace: true });
+      else if (user.role === 'staff') navigate('/staff/dashboard', { replace: true });
+      else navigate('/client/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    setFormError(null);
     setSuccess(null);
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+      setFormError('Passwords do not match.');
       return;
     }
-    setIsLoading(true);
+    setFormIsLoading(true);
 
-    const userData: UserData = { 
-      username, 
-      email, 
-      password, 
-      role // Include role if you allow users to select it during registration
+    // UserData type from services/api might be slightly different from what AuthContext's register expects.
+    // Assuming AuthContext's register function takes an object like this:
+    const registrationData = {
+      username,
+      email,
+      password,
+      role
     };
 
     try {
-      await registerUser(userData);
+      await register(registrationData); // Use register from AuthContext
       setSuccess('Registration successful! Please log in.');
-      // Optionally redirect to login after a short delay
       setTimeout(() => navigate('/login'), 2000);
     } catch (err: any) {
-      if (err.response && err.response.data) {
-        const apiErrors = err.response.data;
-        let formattedErrors = '';
-        if (typeof apiErrors === 'string') {
-          formattedErrors = apiErrors;
-        } else if (apiErrors && typeof apiErrors === 'object') {
-          formattedErrors = Object.entries(apiErrors)
-            .map(([key, value]) => {
-              if (Array.isArray(value)) {
-                return `${key}: ${value.join(', ')}`;
-              } else if (typeof value === 'string') {
-                return `${key}: ${value}`;
-              }
-              return `${key}: An unexpected error format was received.`; // Fallback for other types
-            })
-            .join('\n');
-        }
-        setError(formattedErrors || 'Registration failed. Please try again.');
-      } else {
-        setError('Registration failed. An unexpected error occurred.');
-      }
+      // The error from AuthContext's register should be a direct message or an Error object
+      setFormError(err.message || 'Registration failed. Please try again.');
       console.error('Registration error:', err);
     }
-    setIsLoading(false);
+    setFormIsLoading(false);
   };
 
   return (
@@ -73,7 +64,8 @@ const RegisterPage: React.FC = () => {
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative whitespace-pre-line" role="alert">{error}</div>}
+          {formError && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative whitespace-pre-line" role="alert">{formError}</div>}
+          
           {success && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">{success}</div>}
           
           <div className="rounded-md shadow-sm">
@@ -154,10 +146,10 @@ const RegisterPage: React.FC = () => {
           <div>
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={formIsLoading || authIsLoading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-300"
             >
-              {isLoading ? 'Registering...' : 'Register'}
+              {formIsLoading || authIsLoading ? 'Registering...' : 'Register'}
             </button>
           </div>
         </form>
