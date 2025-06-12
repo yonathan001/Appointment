@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'appointment_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'apdb1',  # Replace with your database name
+        'NAME': 'apdb',  # Replace with your database name
         'USER': 'root',  # Replace with your MySQL username
         'PASSWORD': '',  # Replace with your MySQL password
         'HOST': 'localhost',  # Or your DB host (e.g., 127.0.0.1)
