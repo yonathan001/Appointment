@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-10f_qiq&7*vgto-+#p6mzi%qo&3qr3d_yjhp3ni6v0q^6ksoq@'
+SECRET_KEY = 'django-insecure-_8k2ww5$q2-k3wk30k5v&#md_dykfkcj!e1emnt28-8c26(buc'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -38,19 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    'rest_framework_simplejwt',
-    'corsheaders',
-    'api',
-    'users.apps.UsersConfig',
-    'appointments.apps.AppointmentsConfig',
-    'services.apps.ServicesConfig',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -83,15 +74,8 @@ WSGI_APPLICATION = 'appointment_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'apdb',  # Replace with your database name
-        'USER': 'root',  # Replace with your MySQL username
-        'PASSWORD': '',  # Replace with your MySQL password
-        'HOST': 'localhost',  # Or your DB host (e.g., 127.0.0.1)
-        'PORT': '3306',       # Or your DB port
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -125,71 +109,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
-# CORS Configuration
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # For Vite React frontend
-    "http://127.0.0.1:5173", # Also for Vite React frontend
-    "http://localhost:3000",  # For Create React App frontend
-    "http://127.0.0.1:3000", # Also for Create React App frontend
-]
-CORS_ALLOW_CREDENTIALS = True
-
-# Custom User Model
-AUTH_USER_MODEL = 'users.CustomUser'
-
-# Django REST Framework settings
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'users.authentication.CustomJWTAuthentication', # Custom auth for HttpOnly cookies
-        'rest_framework.authentication.SessionAuthentication', # For browsable API login, keep as fallback or for specific UIs
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication', # Original JWT auth, now replaced by CustomJWTAuthentication
-    ),
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ]
-}
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': False, # Set to True if you want refresh tokens to be single-use
-    'BLACKLIST_AFTER_ROTATION': True,
-    'UPDATE_LAST_LOGIN': True,
-
-    'ALGORITHM': 'HS256',
-    # 'SIGNING_KEY': SECRET_KEY, # Django's SECRET_KEY is used by default if not specified
-    'VERIFYING_KEY': None,
-    'AUDIENCE': None,
-    'ISSUER': None,
-    'JWK_URL': None,
-    'LEEWAY': 0,
-
-    'AUTH_HEADER_TYPES': ('Bearer',), # Still allow Bearer token for flexibility
-    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
-    'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
-
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'TOKEN_TYPE_CLAIM': 'token_type',
-    'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
-
-    'JTI_CLAIM': 'jti',
-
-    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
-    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
-    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
-
-    # Custom settings for cookies (referenced in custom views)
-    'AUTH_COOKIE_ACCESS': 'access_token',      # Name for the access token cookie
-    'AUTH_COOKIE_REFRESH': 'refresh_token',    # Name for the refresh token cookie
-    'AUTH_COOKIE_SECURE': False,               # True in production (HTTPS only)
-    'AUTH_COOKIE_HTTP_ONLY': True,             # Prevent JavaScript access
-    'AUTH_COOKIE_PATH': '/',                   # Cookie path
-    'AUTH_COOKIE_SAMESITE': 'Lax',             # CSRF protection: 'Lax' or 'Strict'
-                                               # 'None' if frontend and backend are on different sites (requires Secure=True)
-}
 
 
 # Static files (CSS, JavaScript, Images)

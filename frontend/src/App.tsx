@@ -1,21 +1,23 @@
-import React from 'react'; // Removed useEffect, useState as they are no longer directly used in App component
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext'; // Import AuthProvider and useAuth
-import Navbar from './components/Navbar';
-import Footer from './components/Footer'; // Import the Footer component
-import ScrollToTop from './components/ScrollToTop'; // Import ScrollToTop
-import HomePage from './pages/HomePage';
-import LoginPage from './pages/auth/LoginPage';
-import RegisterPage from './pages/auth/RegisterPage';
-import ContactUsPage from './pages/ContactUsPage'; // Added import
-import FAQPage from './pages/FAQPage'; // Added import
-import ClientSettingsPage from './pages/client/ClientSettingsPage';
-import NotificationPage from './pages/client/NotificationPage';
 import './App.css'; // Import App.css
 
+import { AuthProvider, useAuth } from './contexts/AuthContext'; // Import AuthProvider and useAuth
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+
+import BookAppointmentPage from './pages/client/BookAppointmentPage'; // Added import
 // Dashboard Components
 import ClientDashboardPage from './pages/client/ClientDashboardPage';
-import BookAppointmentPage from './pages/client/BookAppointmentPage'; // Added import
+import ClientSettingsPage from './pages/client/ClientSettingsPage';
+import ContactUsPage from './pages/ContactUsPage'; // Added import
+import FAQPage from './pages/FAQPage'; // Added import
+import Footer from './components/Footer'; // Import the Footer component
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/auth/LoginPage';
+import Navbar from './components/Navbar';
+import NotificationPage from './pages/client/NotificationPage';
+import React from 'react'; // Removed useEffect, useState as they are no longer directly used in App component
+import RegisterPage from './pages/auth/RegisterPage';
+import ScrollToTop from './components/ScrollToTop'; // Import ScrollToTop
+
 // Placeholder for future staff and admin dashboard pages
 const StaffDashboard = () => <div className="container mx-auto p-4"><h1 className='text-3xl font-semibold'>Staff Dashboard</h1><p className='mt-2 text-gray-700'>Manage your assigned appointments and schedule.</p></div>;
 const AdminDashboard = () => <div className="container mx-auto p-4"><h1 className='text-3xl font-semibold'>Admin Dashboard</h1><p className='mt-2 text-gray-700'>Oversee users, services, and all appointments.</p></div>;

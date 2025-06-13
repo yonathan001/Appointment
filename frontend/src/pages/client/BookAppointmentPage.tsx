@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchServices, createAppointment } from '../../services/api'; // Adjusted import path
-import type { Service, CreateAppointmentPayload } from '../../services/api'; // Adjusted import path
+import { fetchOrganizations, fetchOrganizationServices, createAppointment } from '../../services/api'; 
+import type { Organization, Service, CreateAppointmentPayload } from '../../services/api'; 
 
 const BookAppointmentPage: React.FC = () => {
   const navigate = useNavigate();
@@ -12,33 +12,41 @@ const BookAppointmentPage: React.FC = () => {
   const [notes, setNotes] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [selectedOrg, setSelectedOrg] = useState<string>('');
 
   useEffect(() => {
-    const loadServices = async () => {
+    const loadData = async () => {
       try {
         setLoading(true);
-        const response = await fetchServices();
-        setServices(response.data);
+        const orgRes = await fetchOrganizations();
+        setOrganizations(orgRes.data);
+        if (orgRes.data.length > 0) {
+          const firstOrgId = orgRes.data[0].id.toString();
+          setSelectedOrg(firstOrgId);
+          const serviceRes = await fetchOrganizationServices(orgRes.data[0].id);
+          setServices(serviceRes.data);
+        }
         setError(null);
       } catch (err) {
-        setError('Failed to load services. Please try again later.');
-        console.error("Error fetching services:", err);
+        setError('Failed to load data.');
       }
       setLoading(false);
     };
-    loadServices();
+    loadData();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedService || !selectedDate || !selectedTime) {
-      setError('Please select a service, date, and time.');
+    if (!selectedOrg || !selectedService || !selectedDate || !selectedTime) {
+      setError('Please select organization, service, date, and time.');
       return;
     }
     setLoading(true);
     setError(null);
     try {
       const appointmentData: CreateAppointmentPayload = {
+        organization: parseInt(selectedOrg),
         service: parseInt(selectedService),
         date: selectedDate,
         time: selectedTime,
@@ -61,6 +69,15 @@ const BookAppointmentPage: React.FC = () => {
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow">
         {error && <div className="text-red-500 p-3 bg-red-100 rounded">{error}</div>}
         
+        <div>
+          <label htmlFor="org" className="block text-sm font-medium text-gray-700">Organization</label>
+          <select id="org" value={selectedOrg} onChange={async (e)=>{setSelectedOrg(e.target.value); const res=await fetchOrganizationServices(parseInt(e.target.value)); setServices(res.data); setSelectedService('');}}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+            <option value="">Select organization</option>
+            {organizations.map(o=> <option key={o.id} value={o.id}>{o.name}</option>)}
+          </select>
+        </div>
+
         <div>
           <label htmlFor="service" className="block text-sm font-medium text-gray-700">Service</label>
           <select 

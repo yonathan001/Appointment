@@ -15,20 +15,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include # Make sure include is imported
-from users.cookie_views import (
-    MyTokenObtainPairView,
-    MyTokenRefreshView,
-    LogoutView
-)
+from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('users.urls')),
-    path('api/', include('services.urls')),
-    path('api/', include('appointments.urls')),
-    path('api/auth/login/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'), # Renamed for clarity
-    path('api/auth/refresh/', MyTokenRefreshView.as_view(), name='token_refresh'),   # Renamed for clarity
-    path('api/auth/logout/', LogoutView.as_view(), name='logout'),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')), # Added for DRF login/logout
 ]
