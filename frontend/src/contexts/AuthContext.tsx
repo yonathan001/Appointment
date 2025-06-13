@@ -1,88 +1,80 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { ReactNode } from 'react'; // type-only import
-import apiClient, { loginUser as apiLoginUser, registerUser as apiRegisterUser, fetchUserProfile as apiFetchUserProfile } from '../services/api';
-import type { UserData } from '../services/api'; // type-only import for UserData
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import type { ReactNode } from 'react';
+import { loginUser as apiLoginUser, registerUser as apiRegisterUser, fetchUserProfile as apiFetchUserProfile } from '../services/api';
+import type { UserData } from '../services/api';
 
 interface AuthContextType {
   user: UserData | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (credentials: Pick<UserData, 'username' | 'password'>) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: () => void;
   register: (userData: UserData) => Promise<void>;
-  fetchUser: () => Promise<UserData | null>; 
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserData | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // Start with loading true to fetch user
+  const [isLoading, setIsLoading] = useState(true);
 
-  const fetchUser = async (): Promise<UserData | null> => {
-    setIsLoading(true);
+  const fetchUser = useCallback(async () => {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      // This request will succeed if HTTP-only cookies are present and valid
       const response = await apiFetchUserProfile();
       setUser(response.data);
-      setIsLoading(false);
-      return response.data;
     } catch (error) {
-      console.warn('No authenticated user found or failed to fetch user.');
-      setUser(null);
-      setIsLoading(false);
-      return null;
-    }
-  };
-
-  useEffect(() => {
-    fetchUser();
-  }, []);
-
-  const login = async (credentials: Pick<UserData, 'username' | 'password'>) => {
-    setIsLoading(true);
-    try {
-      await apiLoginUser(credentials);
-      // After successful login, backend sets cookies. Now fetch user details.
-      await fetchUser(); 
-    } catch (error) {
-      setIsLoading(false);
-      throw error; // Re-throw to be caught by the calling component (e.g., LoginPage)
-    }
-  };
-
-  const logout = async () => {
-    setIsLoading(true);
-    try {
-      // Backend should clear HTTP-only cookies on this request.
-      // The endpoint '/users/logout/' is an example; adjust if your backend uses a different one.
-      // We'll need to ensure this endpoint exists and works as expected on the backend.
-      await apiClient.post('/auth/logout/'); // Updated endpoint 
-      setUser(null);
-    } catch (error) {
-      console.error('Logout failed:', error);
-      // Even if API call fails, clear user state on frontend as a fallback
+      console.error('Failed to fetch user profile, token might be invalid.', error);
+      // Clear tokens if fetch fails
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
       setUser(null);
     } finally {
       setIsLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
+
+  const login = async (credentials: Pick<UserData, 'username' | 'password'>) => {
+    try {
+      const response = await apiLoginUser(credentials);
+      localStorage.setItem('access_token', response.data.access);
+      localStorage.setItem('refresh_token', response.data.refresh);
+      // After setting token, fetch user data
+      await fetchUser();
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error; // Re-throw to be caught by the calling component
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    setUser(null);
+    // Optional: notify backend of logout. Not strictly necessary for token auth.
   };
 
   const register = async (userData: UserData) => {
-    setIsLoading(true);
     try {
       await apiRegisterUser(userData);
-      // Decide if registration should auto-login. If so, call login() here.
-      // For now, registration completes, and user can then login separately.
-      setIsLoading(false);
+      // Registration is successful, user can now log in.
     } catch (error) {
-      setIsLoading(false);
+      console.error('Registration failed:', error);
       throw error; // Re-throw to be caught by the calling component
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout, register, fetchUser }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );

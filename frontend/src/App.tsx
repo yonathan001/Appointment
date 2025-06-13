@@ -1,6 +1,6 @@
 import './App.css'; // Import App.css
 
-import { AuthProvider, useAuth } from './contexts/AuthContext'; // Import AuthProvider and useAuth
+import { useAuth } from './contexts/AuthContext'; // Import useAuth
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import BookAppointmentPage from './pages/client/BookAppointmentPage'; // Added import
@@ -25,7 +25,7 @@ const NotFoundPage = () => <div className="container mx-auto p-4 text-center"><h
 
 interface ProtectedRouteProps {
   element: React.ReactElement;
-  allowedRoles?: Array<'admin' | 'client' | 'staff'>;
+  allowedRoles?: Array<'admin' | 'client' | 'staff' | 'organization_admin'>;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, allowedRoles }) => {
@@ -54,10 +54,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, allowedRoles }
 };
 
 const App: React.FC = () => {
-  // The AuthProvider will manage authentication state.
-  // The useEffect for 'authChange' and setAuthCheck state are no longer needed.
+  // The AuthProvider is now in main.tsx, so it's removed from here.
   return (
-    <AuthProvider>
+    <>
       <ScrollToTop />
       <div className="flex flex-col min-h-screen">
         <Navbar />
@@ -98,7 +97,7 @@ const App: React.FC = () => {
         </main>
         <Footer />
       </div>
-    </AuthProvider>
+    </>
   );
 };
 

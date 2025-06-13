@@ -7,12 +7,21 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Send cookies with requests
 });
 
-// Interceptors for adding Authorization header and refreshing tokens are removed.
-// Cookie-based authentication relies on the browser to send cookies automatically.
-// The backend will handle cookie validation and refresh if necessary.
+// Add a request interceptor to include the token in headers
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 export default apiClient;
 
@@ -116,7 +125,7 @@ export const cancelAppointment = (id: number) => {
 };
 
 export const loginUser = (data: Pick<UserData, 'username' | 'password'>) => {
-  return apiClient.post<AuthResponse>('/auth/login/', data); // Updated endpoint
+  return apiClient.post<AuthResponse>('/token/', data);
 };
 
 export const registerUser = (data: UserData) => {
